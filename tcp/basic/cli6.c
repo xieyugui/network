@@ -43,5 +43,7 @@ int main(int argc, char *argv[]) {
     printf("write: %s\n", (rc<0)?strerror(errno):"incomplete");
     exit(-1);
   }
-  return 0;
+
+  close(fd);
+  exit(0);
 }

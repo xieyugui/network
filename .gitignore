@@ -31,3 +31,9 @@
 # etc
 *.pcap
 .gdb_history
+
+cmake-build-debug
+CMakeLists.txt
+*.idea
+*.DS_Store
+

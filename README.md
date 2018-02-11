@@ -11,3 +11,6 @@ These are basic techniques for C network programs on Linux.
 
 Also [cidr-tool](/cidr) is a command-line CIDR calculator. It
 can expand a CIDR, make CIDR ranges from an IP range, etc.
+
+参考的网址
+http://cs.ecs.baylor.edu/~donahoo/practical/CSockets/textcode.html

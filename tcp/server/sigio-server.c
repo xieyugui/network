@@ -61,6 +61,15 @@ void periodic() {
 }
 
 /* signals that we'll accept synchronously in sigwaitinfo */
+/**
+ * SIGIO  描述符上可以进行IO操作
+ * SIGHUP  终端挂断或者进程死亡
+ * SIGTERM 杀或的killall命令发送到进程默认的信号，该信号可以被处理和堵塞，要求程序自己正常退出
+ * SIGINT 来自键盘的中断信号 ( ctrl + c )
+ * SIGQUIT 和SIGINT类似, 但由QUIT字符(通常是Ctrl-\)来控制. 进程在因收到SIGQUIT退出时会产生core文件
+ * SIGALRM  时钟定时信号 在Linux系统下，每一个进程都有惟一的一个定时器，该定时器提供了以秒为单位的定时功能。
+ *          在定时器设置的超时时间到达后，调用alarm的进程将收到SIGALRM信号
+ */
 int sigs[] = {SIGIO,SIGHUP,SIGTERM,SIGINT,SIGQUIT,SIGALRM};
 
 int setup_listener() {
@@ -81,7 +90,8 @@ int setup_listener() {
   sin.sin_port = htons(cfg.port);
 
   /**********************************************************
-   * bind socket to address and port 
+   * bind socket to address and port
+   * 允许完全重复捆绑
    *********************************************************/
   setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
   if (bind(fd, (struct sockaddr*)&sin, sizeof(sin)) == -1) {
@@ -90,7 +100,18 @@ int setup_listener() {
   }
 
   /**********************************************************
-   * request signal be sent to us on descriptor ready 
+   * request signal be sent to us on descriptor ready
+   * fcntl是计算机中的一种函数，通过fcntl可以改变已打开的文件性质
+   * 复制一个现有的描述符(cmd=F_DUPFD).
+   * 获得／设置文件描述符标记(cmd=F_GETFD或F_SETFD).
+   * 获得／设置文件状态标记(cmd=F_GETFL或F_SETFL).
+   * 获得／设置异步I/O所有权(cmd=F_GETOWN或F_SETOWN).
+   * 获得／设置记录锁(cmd=F_GETLK , F_SETLK或F_SETLKW).
+   * F_GETOWN, F_SETOWN, F_GETSIG 和 F_SETSIG 被用于IO可获取的信号
+   * F_GETOWN：获取当前在文件描述词 fd上接收到SIGIO 或 SIGURG事件信号的进程或进程组标识 。
+   * F_SETOWN：设置将要在文件描述词fd上接收SIGIO 或 SIGURG事件信号的进程或进程组标识 。
+   * F_GETSIG：获取标识输入输出可进行的信号。
+   * F_SETSIG：设置标识输入输出可进行的信号。
    *********************************************************/
   fl = fcntl(fd, F_GETFL); 
   fl |= O_ASYNC|O_NONBLOCK;     /* want a signal on fd ready */
